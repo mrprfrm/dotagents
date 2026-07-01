@@ -1,0 +1,15 @@
+{
+  "lastChangelogVersion": "0.80.2",
+  "llamaServerUrl": "http://127.0.0.1:8080",
+  "packages": [
+    "npm:pi-llama-cpp"
+  ],
+  "theme": "nord",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "compaction": {
+    "enabled": true
+  },
+  "editorPaddingX": 0
+}
