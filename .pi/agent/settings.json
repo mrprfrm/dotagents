@@ -11,5 +11,6 @@
   "compaction": {
     "enabled": true
   },
-  "editorPaddingX": 0
+  "editorPaddingX": 1,
+  "enableSkillCommands": true
 }

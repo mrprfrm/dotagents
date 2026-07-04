@@ -11,11 +11,11 @@ stow:
 unstow:
 	stow --dir=. --target=$(HOME) --delete --verbose . 
 
-.PHONY: pi-restow
-pi-restow:
+.PHONY: restow
+restow:
 	mkdir -p $(HOME)
 	stow --dir=. --target=$(HOME) --restow --verbose . 
 
-.PHONY: pi-tree
-pi-tree:
-	tree -a $(HOME)/.pi/agent
+.PHONY: tree
+tree:
+	tree -a -I '.git' 
