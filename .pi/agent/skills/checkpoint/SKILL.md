@@ -54,6 +54,8 @@ The script outputs, in order:
 <latest-checkpoint-id>
 <latest-recap>
 <latest-state>
+<latest-commits>
+<latest-knowledge>
 ```
 
 Set <current-checkpoint-id> to <latest-checkpoint-id> + 1.
@@ -62,7 +64,13 @@ Use <latest-state> as previous project state.
 
 Use <latest-recap> only as context about the latest checkpoint.
 
-Do not read previous checkpoint files unless manifest state or recap is missing or insufficient.
+Use <latest-commits> to avoid recording git commits already saved by previous checkpoints.
+
+Use <latest-knowledge> to avoid recording knowledge files already saved by previous checkpoints.
+
+Do not compare commits and knowledge as one combined artifact list.
+
+Do not read previous checkpoint files unless manifest state, recap, commits, or knowledge are missing or insufficient.
 
 ## Determine checkpoint name
 
@@ -100,6 +108,8 @@ Short exact snippets are allowed only when the checkpoint reference requires the
 
 Create checkpoint references only for significant stable context needed to restore, verify, or continue the saved work.
 
+Every <current-commits> and <current-knowledge> item must also appear in checkpoint references with a short reason.
+
 Do not add files from this skill package as references when they were used only to execute the skill.
 
 Skill package files include:
@@ -111,9 +121,9 @@ Skill package files include:
 
 Include skill package files as checkpoint references only when the user task explicitly edits, reviews, or discusses those files as the subject of work.
 
-Do not include incidental files, helper scripts, reference format files, or internal execution artifacts that did not affect the saved task state.
+Do not include incidental files, helper scripts, reference format files, internal execution artifacts, or unrelated recent commits that did not affect the saved task state.
 
-## Create recap
+## Create current recap
 
 Create <current-recap> for the current checkpoint.
 
@@ -135,18 +145,62 @@ Do not write <current-state> as a changelog.
 
 Keep it compact.
 
+## Create current commits
+
+Create <current-commits> for the current checkpoint.
+
+<current-commits> contains git commit hashes relevant to the current checkpoint range.
+
+If the project root is a git worktree, inspect recent commits silently:
+
+```sh
+git log --format="%H" -n 20
+```
+
+Include only commits that are both:
+
+- relevant to the current checkpoint range;
+- absent from <latest-commits>.
+
+Use full commit hashes.
+
+Do not include commits merely because they are recent.
+
+If the project root is not a git worktree, git is unavailable, or no relevant new commits exist, set <current-commits> to an empty list.
+
+## Create current knowledge
+
+Create <current-knowledge> for the current checkpoint.
+
+<current-knowledge> contains stable knowledge file paths created or materially updated during the current checkpoint range.
+
+Include only files that are both:
+
+- created or materially updated during the current checkpoint range;
+- absent from <latest-knowledge>.
+
+Do not include files that were only read, inspected, or used to execute the skill.
+
+Do not include skill package files unless the user task explicitly edits, reviews, or discusses those files as the subject of work.
+
+If no relevant knowledge files exist, set <current-knowledge> to an empty list.
+
 ## Update manifest
 
-After writing the checkpoint, <current-recap>, and <current-state>, run the skill-local helper script [scripts/update-manifest.sh](scripts/update-manifest.sh) with arguments:
+After writing the checkpoint, <current-recap>, <current-state>, <current-commits>, and <current-knowledge>, run the skill-local helper script [scripts/update-manifest.sh](scripts/update-manifest.sh) with arguments:
 
 ```text
 <current-checkpoint-id>
 <checkpoint-name>
 <current-recap>
 <current-state>
+<current-commits>
+<current-knowledge>
 ```
 
 Pass <current-recap> and <current-state> as one argument each.
+
+Pass <current-commits> and <current-knowledge> as JSON arrays.
 
 The script appends the current checkpoint metadata to `.checkpoints/MANIFEST.json`.
 
@@ -156,11 +210,17 @@ Do not rewrite unrelated manifest entries.
 
 ## Output
 
+All user-visible prose emitted while this skill runs counts as output.
+
+Before the final success or error output, optional status text is allowed only as one short sentence that states the current execution step or blocking reason.
+
+Use tool calls silently.
+
 If the checkpoint file is written and the manifest update succeeds, return only <current-state> and <current-recap>.
 
-Do not print the checkpoint body, manifest JSON, references, reasoning, preambles, plans, progress updates, command commentary, intermediate notes, or extra status text.
+Do not print the checkpoint body, manifest JSON, references, dense reasoning, plans, intent evaluation, decision rationale, command commentary, analysis, intermediate notes, or extra status text.
 
-Write output as short readable bullets.
+Write final output as short readable bullets.
 
 Each bullet must contain one clear point.
 
@@ -191,7 +251,7 @@ Errors:
   ```
 ````
 
-Omit `snippet` when no exact snippet is useful.
+Omit the fenced snippet when no exact snippet is useful.
 
 ## Rules
 
@@ -201,7 +261,7 @@ Omit `snippet` when no exact snippet is useful.
 - Use only significant information from the current checkpoint range.
 - Do not duplicate information already covered by <latest-state>, <latest-recap>, or earlier checkpoints.
 - Ground every saved fact in the current session, inspected artifacts, observed outputs, or explicit user commentary.
-- Do not invent facts, decisions, reasons, errors, fixes, references, or project state.
+- Do not invent facts, decisions, reasons, errors, fixes, references, commits, knowledge files, or project state.
 - Preserve checkpoint records in chronological order.
 - Do not group checkpoint records by type.
 - Each checkpoint record must describe one significant fact.
@@ -215,6 +275,11 @@ Omit `snippet` when no exact snippet is useful.
 - If the runtime cannot execute a required skill-local script, return error output instead of searching for replacement scripts.
 - Do not include conversational filler, speculation, repeated discussion, long logs, full tracebacks, full diffs, full code bodies, or decorative snippets.
 - Allow short exact snippets only when required by the checkpoint reference or error output.
+- Treat all user-visible prose during skill execution as output, not only the final response.
+- Keep pre-output status text optional, rare, and limited to one short sentence.
+- Use pre-output status text only to state the current execution step or blocking reason.
+- Do not print multi-sentence reasoning, plans, intent evaluation, decision rationale, command commentary, analysis, intermediate notes, the checkpoint body, manifest JSON, or references unless explicitly requested.
+- Pre-output status text must not affect checkpoint content, manifest content, <current-state>, <current-recap>, <current-commits>, or <current-knowledge>.
 - Return only the success or error output defined in `Output` unless explicitly requested otherwise.
 - Do not return success output until the checkpoint file is written and the manifest update succeeds.
 - Return only error output if the skill fails before the checkpoint and manifest are both written.
@@ -227,11 +292,11 @@ Successful output:
 ```text
 Current:
 - Checkpoint skill writes append-only checkpoint files and updates manifest metadata.
-- Checkpoint output returns only current state and recap.
+- Checkpoint manifest tracks current state, recap, commits, and knowledge files.
 
 Recap:
-- Finalized token-efficient output format.
-- Switched checkpoint structure to reference-driven flat chronological records.
+- Added manifest tracking for new commit hashes and knowledge files.
+- Kept checkpoint references as the detailed source for why each artifact matters.
 ```
 
 Error output:
