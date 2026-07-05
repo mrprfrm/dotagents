@@ -18,4 +18,4 @@ restow:
 
 .PHONY: tree
 tree:
-	tree -a -I '.git' 
+	tree -a -I '.git'  $(if $(s), $(s))
