@@ -1,0 +1,6 @@
+^Makefile$
+^README\.md$
+^\.git$
+^\.chekcpoints$
+^\.gitignore$
+^\.stow-local-ignore$

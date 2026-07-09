@@ -108,7 +108,13 @@ Short exact snippets are allowed only when the checkpoint reference requires the
 
 Create checkpoint references only for significant stable context needed to restore, verify, or continue the saved work.
 
-Every <current-commits> and <current-knowledge> item must also appear in checkpoint references with a short reason.
+Every <current-commits> item must appear in checkpoint references with a short reason.
+
+Every <current-knowledge> item must appear in checkpoint references with a short reason, unless it is already contained in a referenced git commit.
+
+When a referenced git commit already contains changed files, do not also add those files as references.
+
+Add a file reference contained in a referenced git commit only when the file itself is a primary artifact of the checkpoint and needs direct recall.
 
 Do not add files from this skill package as references when they were used only to execute the skill.
 
@@ -121,7 +127,7 @@ Skill package files include:
 
 Include skill package files as checkpoint references only when the user task explicitly edits, reviews, or discusses those files as the subject of work.
 
-Do not include incidental files, helper scripts, reference format files, internal execution artifacts, or unrelated recent commits that did not affect the saved task state.
+Do not include incidental files, helper scripts, reference format files, internal execution artifacts, unrelated recent commits, or file references already covered by recorded commits.
 
 ## Create current recap
 
@@ -177,7 +183,8 @@ Create <current-knowledge> for the current checkpoint.
 Include only files that are both:
 
 - created or materially updated during the current checkpoint range;
-- absent from <latest-knowledge>.
+- absent from <latest-knowledge>;
+- not already contained in a referenced <current-commits> item.
 
 Do not include files that were only read, inspected, or used to execute the skill.
 
@@ -259,7 +266,8 @@ Omit the fenced snippet when no exact snippet is useful.
 - Never edit existing checkpoint files.
 - Do not modify project source code or unrelated files.
 - Use only significant information from the current checkpoint range.
-- Do not duplicate information already covered by <latest-state>, <latest-recap>, or earlier checkpoints.
+- Do not miss any significant part which also includes errors and related fixes, knowledges and associated questions
+- Do not duplicate information already covered by <latest-state>, <latest-recap>, <latest-commits>, <latest-knowledge>, or earlier checkpoints.
 - Ground every saved fact in the current session, inspected artifacts, observed outputs, or explicit user commentary.
 - Do not invent facts, decisions, reasons, errors, fixes, references, commits, knowledge files, or project state.
 - Preserve checkpoint records in chronological order.
@@ -269,6 +277,8 @@ Omit the fenced snippet when no exact snippet is useful.
 - Keep <current-recap> focused on this checkpoint.
 - Keep <current-state> focused on what is currently true after this checkpoint.
 - Keep references as stable pointers only.
+- Prefer git commit references over file references when the commit already contains the file changes.
+- Do not add file references for files already contained in a referenced <current-commits> item unless the file itself is a primary artifact needing direct recall.
 - Do not use references to store decisions, rationale, todos, explanations, or model opinions.
 - Do not reference skill package files unless they are the explicit subject of the saved work.
 - Required helper scripts are skill-local; do not resolve them from the project root.
