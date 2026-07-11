@@ -94,7 +94,9 @@ Create exactly one checkpoint file:
 
 Use [the checkpoint reference](references/checkpoint-reference.md) for checkpoint structure, record-specific formats, and reference entries.
 
-Capture only significant information since the latest checkpoint: facts needed to resume work, preserve project state, avoid repeated mistakes, or avoid reopening settled decisions.
+Capture all significant information since the latest checkpoint: facts needed to resume work after compaction or agent switch, preserve project state, avoid repeated mistakes, or avoid reopening settled decisions.
+
+Put significant context in the checkpoint body, not only in references, recap, state, commits, or knowledge metadata.
 
 Write facts in chronological order.
 
@@ -106,15 +108,17 @@ Short exact snippets are allowed only when the checkpoint reference requires the
 
 ## Create references
 
-Create checkpoint references only for significant stable context needed to restore, verify, or continue the saved work.
+Create checkpoint references only for significant stable pointers needed to restore, verify, or continue the saved work.
 
 Every <current-commits> item must appear in checkpoint references with a short reason.
 
-Every <current-knowledge> item must appear in checkpoint references with a short reason, unless it is already contained in a referenced git commit.
+Every <current-knowledge> item must appear in checkpoint references with a short reason.
 
-When a referenced git commit already contains changed files, do not also add those files as references.
+Do not put facts, decisions, rationale, todos, errors, fixes, or recall details only in references.
 
-Add a file reference contained in a referenced git commit only when the file itself is a primary artifact of the checkpoint and needs direct recall.
+When a referenced git commit already contains changed files, do not also add those files as file references or knowledge items.
+
+Add a file reference contained in a referenced git commit only when the file itself is a primary artifact of the checkpoint and needs direct recall independent of the commit.
 
 Do not add files from this skill package as references when they were used only to execute the skill.
 
@@ -178,15 +182,16 @@ If the project root is not a git worktree, git is unavailable, or no relevant ne
 
 Create <current-knowledge> for the current checkpoint.
 
-<current-knowledge> contains stable knowledge file paths created or materially updated during the current checkpoint range.
+<current-knowledge> contains stable knowledge file paths created or materially updated during the current checkpoint range that are not already contained in referenced commits.
 
-Include only files that are both:
+Include only files that are all of these:
 
 - created or materially updated during the current checkpoint range;
 - absent from <latest-knowledge>;
-- not already contained in a referenced <current-commits> item.
+- independently useful for recall outside <current-commits>;
+- not contained in any referenced <current-commits> item.
 
-Do not include files that were only read, inspected, or used to execute the skill.
+Do not include files that were only read, inspected, used to execute the skill, or already captured by a referenced commit.
 
 Do not include skill package files unless the user task explicitly edits, reviews, or discusses those files as the subject of work.
 
@@ -278,9 +283,10 @@ Omit the fenced snippet when no exact snippet is useful.
 - Keep <current-recap> focused on this checkpoint.
 - Keep <current-state> focused on what is currently true after this checkpoint.
 - Keep references as stable pointers only.
+- Keep recall facts in the checkpoint body, not only in references or manifest metadata.
 - Prefer git commit references over file references when the commit already contains the file changes.
-- Do not add file references for files already contained in a referenced <current-commits> item unless the file itself is a primary artifact needing direct recall.
-- Do not use references to store decisions, rationale, todos, explanations, or model opinions.
+- Do not add file references or knowledge items for files already contained in a referenced <current-commits> item unless the file itself is a primary artifact needing direct recall independent of the commit.
+- Do not use references to store decisions, rationale, todos, explanations, errors, fixes, recall details, or model opinions.
 - Do not reference skill package files unless they are the explicit subject of the saved work.
 - Required helper scripts are skill-local; do not resolve them from the project root.
 - If the runtime cannot execute a required skill-local script, return error output instead of searching for replacement scripts.
