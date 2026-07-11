@@ -266,7 +266,8 @@ Omit the fenced snippet when no exact snippet is useful.
 - Never edit existing checkpoint files.
 - Do not modify project source code or unrelated files.
 - Use only significant information from the current checkpoint range.
-- Do not miss any significant part which also includes errors and related fixes, knowledges and associated questions
+- Before writing the checkpoint, review the current checkpoint range for significant user requests, user corrections, applied changes, generated outputs, errors, fixes, missing facts, knowledge, and unresolved questions.
+- Do not omit significant assistant mistakes or user corrections that affect how the work should continue.
 - Do not duplicate information already covered by <latest-state>, <latest-recap>, <latest-commits>, <latest-knowledge>, or earlier checkpoints.
 - Ground every saved fact in the current session, inspected artifacts, observed outputs, or explicit user commentary.
 - Do not invent facts, decisions, reasons, errors, fixes, references, commits, knowledge files, or project state.
