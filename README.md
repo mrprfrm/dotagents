@@ -2,6 +2,26 @@
 
 Dotfiles-style configuration and extensions for AI coding agents.
 
+## Install
+
+Installation uses GNU Stow, so `stow` must be available on your system and commands should be run from this repository root.
+
+Install links into `$HOME`:
+
+```sh
+make stow
+```
+
+This symlinks the tracked agent configuration from this repository into the matching paths under your home directory.
+
+Remove those links from `$HOME`:
+
+```sh
+make unstow
+```
+
+Other useful maintenance commands are documented in the `Makefile`.
+
 ## Pi agent skills
 
 ### `commit-message`
