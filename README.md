@@ -53,6 +53,36 @@ Restores checkpoint context after compaction, handoff, or agent switch.
 - Does not reprint checkpoint bodies verbatim.
 - Does not print commit or knowledge artifacts separately; references carry user-visible artifact pointers.
 
+### `knowledge-list`
+
+Lists reusable technical knowledge candidates from the current session.
+
+- Uses only the current session as input.
+- Returns concise candidate names and scopes.
+- Does not read files, invoke other skills, or save notes.
+
+### `knowledge-save`
+
+Saves one coherent reusable technical note under `.knowledge/`.
+
+- Captures significant prerequisites, mechanisms, decisions, errors, fixes, verification, constraints, and unresolved limitations.
+- Writes concise self-contained notes that can be reused without the original conversation.
+- Follows the skill reference format for note structure and omission rules.
+
+### `code-documentation`
+
+Updates source-bound documentation without changing implementation behavior.
+
+- Works from the current session or an explicit scope.
+- Updates only documentation for resolved in-scope declarations.
+- Preserves existing documentation conventions and avoids unrelated formatting changes.
+
+## Knowledge notes
+
+Reusable knowledge notes are stored under `.knowledge/` when created with `knowledge-save`.
+
+Each note should be self-contained, technically complete, and free of session narration or sensitive values.
+
 ## Checkpoint state
 
 Checkpoint records are stored in `.checkpoints/`:
@@ -68,4 +98,6 @@ The current checkpoint state covers:
 - checkpoint commit and knowledge metadata tracking;
 - commit-first references;
 - explicit completeness review before writing checkpoints;
-- recall workflow for restoring context.
+- recall workflow for restoring context;
+- reusable knowledge listing and saving;
+- scoped source documentation updates.
