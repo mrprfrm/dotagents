@@ -14,7 +14,7 @@ Use:
 
 ```text
 <knowledge-root> = <cwd>/.knowledge/
-<knowledge-reference> = <skill-directory>/references/note.md
+<knowledge-reference> = <skill-directory>/references/knowledge-reference.md
 ```
 
 Create `<knowledge-root>` and missing target directories when needed.
