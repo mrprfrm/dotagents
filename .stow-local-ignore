@@ -1,6 +1,8 @@
 ^Makefile$
 ^README\.md$
 ^\.git$
-^\.chekcpoints$
+^\.checkpoints$
+^\.knowledge$
+^\.DS_Store$
 ^\.gitignore$
 ^\.stow-local-ignore$
